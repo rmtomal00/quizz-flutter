@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:quizz/admob/admobHelper.dart';
 
 class QuizCard extends StatelessWidget {
   final int id;
@@ -6,12 +8,15 @@ class QuizCard extends StatelessWidget {
   final List<String> options;
   final String answer;
 
-  const QuizCard({super.key, 
-    required this.id,
-    required this.question,
-    required this.options,
-    required this.answer,
-  });
+  final AdmobHelper helper;
+
+  const QuizCard(
+      {super.key,
+      required this.id,
+      required this.question,
+      required this.options,
+      required this.answer,
+      required this.helper});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,8 @@ class QuizCard extends StatelessWidget {
                     children: [
                       Text(
                         '${String.fromCharCode(65 + options.indexOf(option))}. ',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Expanded(
                         child: Text(
@@ -61,15 +67,30 @@ class QuizCard extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown[300], 
+                backgroundColor: Colors.brown[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Correct Answer: $answer')),
-                );
+                helper.showAd();
+
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return  AlertDialog(
+                        title: const Text("Correct Answer"),
+                        content: Text(answer),
+                        actions: [
+                          TextButton(onPressed: ()=>{
+                            Navigator.of(context).pop()
+                          }, child: const Text("Cancel"))
+                        ],
+                      );
+                    });
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   SnackBar(content: Text('Correct Answer: $answer')),
+                // );
               },
               child: const Text(
                 'Show Answer',
